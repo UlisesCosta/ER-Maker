@@ -1,13 +1,13 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import { EREditor } from "../components/EREditor";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "ER Maker — Chen Notation Editor" },
+    { name: "description", content: "Conceptual ER diagram editor in Chen notation" },
   ];
 }
 
 export default function Home() {
-  return <Welcome />;
+  return <EREditor />;
 }
