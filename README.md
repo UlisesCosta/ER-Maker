@@ -1,87 +1,194 @@
-# Welcome to React Router!
 
-A modern, production-ready template for building full-stack React applications using React Router.
+# ER Maker
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+Lightweight SQL/DBML → Entity Relationship Diagram generator.
 
-## Features
+ER Maker transforms relational schemas into cleaner and more semantic **Entity-Relationship diagrams**, automatically inferring:
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Entities
+- Relationships
+- Cardinalities
+- Associative entities
+- N:M bridge tables
+- Conceptual relationship names
 
-## Getting Started
-
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+Unlike traditional database diagram tools, ER Maker focuses on the **conceptual model**, not only the physical schema.
 
 ---
 
-Built with ❤️ using React Router.
+# Features
+
+## Automatic Relationship Inference
+
+ER Maker detects:
+
+- `1:1`
+- `1:N`
+- `N:M`
+
+relationships directly from:
+- primary keys
+- foreign keys
+- references
+
+---
+
+## Conceptual Relationship Names
+
+### N:M Relationships
+
+Bridge tables automatically become relationship nodes.
+
+```dbml
+Table post_tags [alias: "CONTIENE"] {
+  post_id int
+  tag_id int
+}
+````
+
+Result:
+
+```text
+POST --- CONTIENE --- TAG
+```
+
+---
+
+### Direct 1:N Relationships
+
+Refs can define business verbs using aliases.
+
+```dbml
+Ref: posts.user_id > users.id [alias: "ESCRIBE"]
+```
+
+Result:
+
+```text
+USER --- ESCRIBE --- POST
+```
+
+---
+
+## Associative Entity Detection
+
+ER Maker can detect when a join table may actually represent a real business entity.
+
+Example:
+
+```dbml
+Table appointments {
+  id int [pk]
+  patient_id int
+  doctor_id int
+  diagnosis varchar
+  appointment_date timestamp
+}
+```
+
+Inference:
+
+```text
+associative-entity-candidate
+```
+
+The engine can suggest promoting the relationship into a standalone entity.
+
+---
+
+# Example
+
+```dbml
+Table users {
+  id int [pk]
+  username varchar
+}
+
+Table posts {
+  id int [pk]
+  user_id int
+  title varchar
+}
+
+Table tags {
+  id int [pk]
+  label varchar
+}
+
+Table post_tags [alias: "CONTIENE"] {
+  post_id int
+  tag_id int
+}
+
+Ref: posts.user_id > users.id [alias: "ESCRIBE"]
+
+Ref: post_tags.post_id > posts.id
+Ref: post_tags.tag_id > tags.id
+```
+
+Generated conceptual ER:
+
+```text
+USER --- ESCRIBE --- POST
+POST --- CONTIENE --- TAG
+```
+
+---
+
+# Philosophy
+
+Most schema visualizers render tables directly as entities.
+
+ER Maker instead tries to infer the **semantic conceptual model** behind the schema:
+
+* hide technical join tables
+* infer business relationships
+* detect associative entities
+* generate cleaner ER diagrams
+
+---
+
+# Planned Features
+
+* Weak entities
+* Identifying relationships
+* Derived attributes
+* Conceptual vs physical view modes
+* Export to SVG
+* Auto-layout engine
+* SQL parser support
+* Interactive editing
+
+---
+
+# Why ER Maker?
+
+Traditional tools:
+
+```text
+TABLES + LINES
+```
+
+ER Maker aims for:
+
+```text
+ENTITIES + BUSINESS RELATIONSHIPS
+```
+
+---
+
+# Installation
+
+```bash
+  bun install
+```
+
+# Usage
+
+```bash
+  bun run dev
+```
+
+
+ 
+
