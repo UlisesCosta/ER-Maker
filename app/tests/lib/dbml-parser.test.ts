@@ -158,4 +158,46 @@ Ref: posts.user_id > users.id
     const schema = parseDbml(input);
     expect(schema.refs[0].alias).toBeUndefined();
   });
+
+  it("parses multivalued column flag", () => {
+    const input = `
+Table users {
+  id int [pk]
+  email varchar [multivalued]
+}
+`;
+    const schema = parseDbml(input);
+    const emailCol = schema.tables[0].columns.find((c) => c.name === "email");
+    expect(emailCol?.multivalued).toBe(true);
+    expect(emailCol?.derived).toBe(false);
+  });
+
+  it("parses derived column flag", () => {
+    const input = `
+Table users {
+  id int [pk]
+  age int [derived]
+}
+`;
+    const schema = parseDbml(input);
+    const ageCol = schema.tables[0].columns.find((c) => c.name === "age");
+    expect(ageCol?.derived).toBe(true);
+    expect(ageCol?.multivalued).toBe(false);
+  });
+
+  it("parses combined flags on a column", () => {
+    const input = `
+Table users {
+  id int [pk]
+  email varchar [not null, multivalued]
+  age int [derived]
+}
+`;
+    const schema = parseDbml(input);
+    const emailCol = schema.tables[0].columns.find((c) => c.name === "email");
+    expect(emailCol?.notNull).toBe(true);
+    expect(emailCol?.multivalued).toBe(true);
+    const ageCol = schema.tables[0].columns.find((c) => c.name === "age");
+    expect(ageCol?.derived).toBe(true);
+  });
 });

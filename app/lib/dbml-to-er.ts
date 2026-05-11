@@ -129,12 +129,18 @@ export function schemaToEr(
 
     const attributes: ERAttribute[] = table.columns
       .filter((c) => !fkCols.has(c.name)) // hide FK columns
-      .map((c) => ({
-        id: makeAttributeId(table.name, c.name),
-        name: c.name,
-        kind: c.pk ? "key" : "simple",
-        source: { origin, sourceId: `${table.name}.${c.name}` },
-      }));
+      .map((c) => {
+        let kind: ERAttribute["kind"] = "simple";
+        if (c.pk) kind = "key";
+        else if (c.derived) kind = "derived";
+        else if (c.multivalued) kind = "multivalued";
+        return {
+          id: makeAttributeId(table.name, c.name),
+          name: c.name,
+          kind,
+          source: { origin, sourceId: `${table.name}.${c.name}` },
+        };
+      });
 
     const entitySource: SourceTrace = { origin, sourceId: table.name };
     const entityInference: InferenceMeta = {
@@ -259,11 +265,17 @@ export function schemaToEr(
 
     const fkCols = fkColumnsFor(tableName, refs);
     const extraCols = table.columns.filter((c) => !fkCols.has(c.name));
-    const relAttributes: ERAttribute[] = extraCols.map((c) => ({
-      id: makeAttributeId(tableName, c.name),
-      name: c.name,
-      kind: "simple" as const,
-    }));
+    const relAttributes: ERAttribute[] = extraCols.map((c) => {
+      let kind: ERAttribute["kind"] = "simple";
+      if (c.pk) kind = "key";
+      else if (c.derived) kind = "derived";
+      else if (c.multivalued) kind = "multivalued";
+      return {
+        id: makeAttributeId(tableName, c.name),
+        name: c.name,
+        kind,
+      };
+    });
 
     // V2: classify the enriched join table
     const joinTableKind = classifyEnrichedJoin(table, fkCols);

@@ -42,32 +42,29 @@ const edgeTypes = {
 };
 
 const DEMO_DBML = `// Demo DBML — paste your own schema below
-Table users {
-  id int [pk]
-  username varchar [not null]
-  email varchar
+Table student {
+  student_id int [pk]
+  name varchar [not null]
+  date_of_birth date
+  age int [derived]
+  phone varchar [multivalued]
 }
 
-Table posts {
-  id int [pk]
-  user_id int [not null]
-  title varchar
-  body varchar
+Table course {
+  course_code int [pk]
+  title varchar [not null]
+  credits int
 }
 
-Table tags {
-  id int [pk]
-  label varchar [not null]
+Table enrollment {
+  student_id int [not null]
+  course_code int [not null]
+  grade varchar
+  semester varchar
 }
 
-Table post_tags {
-  post_id int [not null]
-  tag_id int [not null]
-}
-
-Ref: posts.user_id > users.id [alias: "ESCRIBE"]
-Ref: post_tags.post_id > posts.id
-Ref: post_tags.tag_id > tags.id
+Ref: enrollment.student_id > student.student_id [alias: "ENROLLS"]
+Ref: enrollment.course_code > course.course_code
 `;
 
 const DEMO_SQL = `/* Demo SQL — paste your own DDL below */

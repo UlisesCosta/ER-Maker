@@ -255,6 +255,52 @@ describe("schemaToEr — join table with business columns → N:M with attribute
   });
 });
 
+describe("schemaToEr — attribute kinds", () => {
+  const attributeSchema: NeutralSchema = {
+    tables: [
+      {
+        name: "student",
+        columns: [
+          { name: "id", type: "int", pk: true, notNull: true },
+          { name: "name", type: "varchar", pk: false, notNull: true },
+          { name: "age", type: "int", pk: false, notNull: false, derived: true },
+          { name: "phone", type: "varchar", pk: false, notNull: false, multivalued: true },
+        ],
+      },
+    ],
+    refs: [],
+  };
+
+  it("maps derived columns to derived attributes", () => {
+    const diagram = schemaToEr(attributeSchema);
+    const ageAttr = diagram.entities[0].attributes.find((a) => a.name === "age");
+    expect(ageAttr?.kind).toBe("derived");
+  });
+
+  it("maps multivalued columns to multivalued attributes", () => {
+    const diagram = schemaToEr(attributeSchema);
+    const phoneAttr = diagram.entities[0].attributes.find((a) => a.name === "phone");
+    expect(phoneAttr?.kind).toBe("multivalued");
+  });
+
+  it("maps pk columns to key attributes even when also flagged derived/multivalued", () => {
+    const schema: NeutralSchema = {
+      tables: [
+        {
+          name: "test",
+          columns: [
+            { name: "id", type: "int", pk: true, notNull: true, derived: true },
+          ],
+        },
+      ],
+      refs: [],
+    };
+    const diagram = schemaToEr(schema);
+    const idAttr = diagram.entities[0].attributes.find((a) => a.name === "id");
+    expect(idAttr?.kind).toBe("key");
+  });
+});
+
 describe("schemaToEr — empty/invalid input", () => {
   it("returns valid empty diagram for empty schema", () => {
     const diagram = schemaToEr({ tables: [], refs: [] });

@@ -13,6 +13,10 @@ export interface SchemaColumn {
   notNull: boolean;
   /** UNIQUE constraint — used by V2 heuristics to infer 1:1 cardinality. Defaults to false when absent. */
   unique?: boolean;
+  /** Multivalued attribute — ER Maker extension for conceptual modeling */
+  multivalued?: boolean;
+  /** Derived/calculated attribute — ER Maker extension for conceptual modeling */
+  derived?: boolean;
   /** Column-level note (DBML `note:` field) */
   note?: string;
 }

@@ -11,11 +11,15 @@ Instrucciones:
 - Para relaciones 1:N, usa: Ref: tabla.col > tabla.col [alias: "VERBO"]
 - Incluye claves primarias [pk] y foráneas implícitas via Ref
 - Asegúrate de que las tablas puente N:M tengan exactamente dos columnas de referencia
+- Atributos multivaluados (ej. teléfonos, emails): usa [multivalued] en la columna
+- Atributos derivados/calculados (ej. edad, total): usa [derived] en la columna
 
 Ejemplo:
 Table users {
   id int [pk]
   name varchar
+  email varchar [multivalued]
+  age int [derived]
 }
 Table posts {
   id int [pk]

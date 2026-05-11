@@ -4,7 +4,7 @@
  * Supported syntax:
  *   Table <name> {
  *   Table <name> [alias: "ALIAS"] {
- *     <column> <type> [pk] [not null]
+ *     <column> <type> [pk] [not null] [multivalued] [derived]
  *     ...
  *   }
  *   Ref: <table>.<col> > <table>.<col>
@@ -53,6 +53,8 @@ export function parseDbml(input: string): NeutralSchema {
               pk: flags.includes("pk"),
               notNull: flags.includes("not null") || flags.includes("pk"),
               unique: flags.includes("unique") || flags.includes("pk"),
+              multivalued: flags.includes("multivalued"),
+              derived: flags.includes("derived"),
             });
           }
         }
