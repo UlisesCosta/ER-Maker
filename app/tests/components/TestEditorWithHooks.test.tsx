@@ -170,7 +170,7 @@ describe("TestEditorWithHooks import simulation", () => {
     // Wait for React to process
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const recetaNode = capturedNodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = capturedNodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
 
     const data = recetaNode!.data as {
@@ -184,7 +184,7 @@ describe("TestEditorWithHooks import simulation", () => {
     const nodesContainer = window.document.getElementById("nodes");
     const recetaDom = nodesContainer?.children
       ? Array.from(nodesContainer.children).find(
-          (el) => (el as any).getAttribute("data-id") === "rel-prescriptions"
+          (el) => (el as any).getAttribute("data-id") === "rel-prescriptions-appointments-medications"
         )
       : undefined;
     expect(recetaDom).toBeDefined();
@@ -232,7 +232,7 @@ describe("TestEditorWithHooks import simulation", () => {
     const nodesContainer2 = window.document.getElementById("nodes");
     const recetaDom = nodesContainer2?.children
       ? Array.from(nodesContainer2.children).find(
-          (el) => (el as any).getAttribute("data-id") === "rel-prescriptions"
+          (el) => (el as any).getAttribute("data-id") === "rel-prescriptions-appointments-medications"
         )
       : undefined;
     const toggleBtn = recetaDom
@@ -248,17 +248,17 @@ describe("TestEditorWithHooks import simulation", () => {
     // After toggle, should show − ATRIB
     expect(toggleCalls.length).toBeGreaterThan(0);
     const lastToggle = toggleCalls[toggleCalls.length - 1];
-    const toggledRel = lastToggle.diagram.relationships.find((r) => r.id === "rel-prescriptions");
+    const toggledRel = lastToggle.diagram.relationships.find((r) => r.id === "rel-prescriptions-appointments-medications");
     expect(toggledRel?.attributesExpanded).toBe(true);
 
-    const recetaNode = capturedNodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = capturedNodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect((recetaNode!.data as any).attributesExpanded).toBe(true);
     expect((recetaNode!.data as any).hasHiddenAttributes).toBe(false);
 
     const nodesContainer3 = window.document.getElementById("nodes");
     const updatedRecetaDom = nodesContainer3?.children
       ? Array.from(nodesContainer3.children).find(
-          (el) => (el as any).getAttribute("data-id") === "rel-prescriptions"
+          (el) => (el as any).getAttribute("data-id") === "rel-prescriptions-appointments-medications"
         )
       : undefined;
     const updatedToggleBtn = updatedRecetaDom

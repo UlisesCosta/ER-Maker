@@ -120,9 +120,7 @@ function addAttributeNodes(
       id: `edge-${parentId}-${attr.id}`,
       source: parentId,
       target: attr.id,
-      type: "straight",
-      sourceHandle: "attr",
-      targetHandle: side === "left" ? "right" : "left",
+      type: "erAttribute",
       style: { stroke: ATTR_EDGE_STROKE, strokeWidth: 1 },
     });
   });

@@ -81,7 +81,10 @@ function makeEntityId(tableName: string): string {
   return `entity-${slug(tableName)}`;
 }
 
-function makeRelId(name: string): string {
+function makeRelId(name: string, fromTable?: string, toTable?: string): string {
+  if (fromTable && toTable) {
+    return `rel-${slug(name)}-${slug(fromTable)}-${slug(toTable)}`;
+  }
   return `rel-${slug(name)}`;
 }
 
@@ -204,7 +207,7 @@ export function schemaToEr(
     const relName = ref.alias ?? `${ref.fromTable.toUpperCase()}_${ref.toTable.toUpperCase()}`;
     relationships.push({
       type: "relationship",
-      id: makeRelId(relName),
+      id: makeRelId(relName, ref.fromTable, ref.toTable),
       name: relName,
       participants: [
         { entityId: fromEntityId, cardinality: fromCardinality, participation: fromParticipation },
@@ -234,7 +237,7 @@ export function schemaToEr(
 
     relationships.push({
       type: "relationship",
-      id: makeRelId(tableName),
+      id: makeRelId(tableName, ref1.toTable, ref2.toTable),
       name: relName,
       participants: [
         { entityId: eid1, cardinality: "N", participation: "partial" },
@@ -295,7 +298,7 @@ export function schemaToEr(
 
     relationships.push({
       type: "relationship",
-      id: makeRelId(tableName),
+      id: makeRelId(tableName, ref1.toTable, ref2.toTable),
       name: relName,
       participants: [
         { entityId: eid1, cardinality: "N", participation: "partial" },

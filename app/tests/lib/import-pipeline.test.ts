@@ -71,7 +71,7 @@ describe("Integration: full import pipeline", () => {
     const schema = parseDbml(HOSPITAL_DBML);
     const diagram = schemaToEr(schema, "dbml");
     const { nodes } = erToFlow(diagram);
-    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     const data = recetaNode!.data as {
       attributesExpanded: boolean;
@@ -103,7 +103,7 @@ describe("Integration: full import pipeline", () => {
     expect(merged.some((n) => n.id === "rel-enrollment")).toBe(false);
 
     // New RECETA node should exist with correct data
-    const recetaNode = merged.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = merged.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     const data = recetaNode!.data as {
       attributesExpanded: boolean;
@@ -118,7 +118,7 @@ describe("Integration: full import pipeline", () => {
     const diagram = schemaToEr(schema, "dbml");
     const { nodes } = erToFlow(diagram);
     const withCb = withToggleCallback(nodes, () => {});
-    const recetaNode = withCb.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = withCb.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     const data = recetaNode!.data as {
       attributesExpanded: boolean;
@@ -147,7 +147,7 @@ describe("Integration: full import pipeline", () => {
     const merged = simulateSyncMerge(demoNodes, imported);
 
     // RECETA should still be collapsed
-    const recetaNode = merged.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = merged.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     const data = recetaNode!.data as {
       attributesExpanded: boolean;

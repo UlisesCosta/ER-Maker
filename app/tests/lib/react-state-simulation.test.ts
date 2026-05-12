@@ -90,7 +90,7 @@ function simulateEditorImport(): {
 describe("React state simulation: hospital schema import", () => {
   it("after import, RECETA node has attributesExpanded false", () => {
     const { nodes } = simulateEditorImport();
-    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     const data = recetaNode!.data as {
       attributesExpanded: boolean;
@@ -141,7 +141,7 @@ describe("React state simulation: hospital schema import", () => {
     nodes = withToggleCallback(merged, () => {});
     edges = newEdges;
 
-    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     const data = recetaNode!.data as {
       attributesExpanded: boolean;

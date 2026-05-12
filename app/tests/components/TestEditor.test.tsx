@@ -114,7 +114,7 @@ describe("TestEditor import simulation", () => {
     // Wait for React to process
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const recetaNode = capturedNodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = capturedNodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
 
     const data = recetaNode!.data as {

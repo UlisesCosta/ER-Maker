@@ -154,7 +154,7 @@ describe("EREditor with mocked ReactFlow", () => {
     (loadBtn as any).click();
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const recetaNode = lastReactFlowNodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = lastReactFlowNodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     const data = recetaNode!.data as {
       attributesExpanded: boolean;
@@ -210,7 +210,7 @@ describe("EREditor with mocked ReactFlow", () => {
 
     // Click + ATRIB
     const recetaDom = Array.from(container.querySelectorAll("[data-id]")).find(
-      (el) => el.getAttribute("data-id") === "rel-prescriptions"
+      (el) => el.getAttribute("data-id") === "rel-prescriptions-appointments-medications"
     );
     const toggleBtn = recetaDom?.querySelector(".toggle-btn") as any;
     expect(toggleBtn?.textContent).toBe("+ atrib");
@@ -219,12 +219,12 @@ describe("EREditor with mocked ReactFlow", () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // After toggle, should show − ATRIB
-    const recetaNode = lastReactFlowNodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = lastReactFlowNodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect((recetaNode!.data as any).attributesExpanded).toBe(true);
     expect((recetaNode!.data as any).hasHiddenAttributes).toBe(false);
 
     const updatedRecetaDom = Array.from(container.querySelectorAll("[data-id]")).find(
-      (el) => el.getAttribute("data-id") === "rel-prescriptions"
+      (el) => el.getAttribute("data-id") === "rel-prescriptions-appointments-medications"
     );
     const updatedToggleBtn = updatedRecetaDom?.querySelector(".toggle-btn");
     expect(updatedToggleBtn?.textContent).toBe("− atrib");

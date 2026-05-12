@@ -84,13 +84,13 @@ describe("Integration: hospital schema trace", () => {
   });
 
   it("step 4: erToFlow creates a relationship node for RECETA", () => {
-    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
     expect(recetaNode!.type).toBe("erRelationship");
   });
 
   it("step 5: RECETA node data has attributesExpanded false and hasHiddenAttributes true", () => {
-    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     const data = recetaNode!.data as {
       attributesExpanded: boolean;
       hasHiddenAttributes: boolean;
@@ -107,7 +107,7 @@ describe("Integration: hospital schema trace", () => {
 
   it("step 7: edges connect RECETA to its participant entities", () => {
     const recetaEdges = edges.filter(
-      (e) => e.source === "rel-prescriptions" || e.target === "rel-prescriptions"
+      (e) => e.source === "rel-prescriptions-appointments-medications" || e.target === "rel-prescriptions-appointments-medications"
     );
     expect(recetaEdges.length).toBeGreaterThanOrEqual(2);
   });
@@ -120,7 +120,7 @@ describe("Integration: +ATRIB bug reproduction", () => {
     const { nodes } = erToFlow(diagram);
 
     // Find the RECETA relationship node
-    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions");
+    const recetaNode = nodes.find((n) => n.id === "rel-prescriptions-appointments-medications");
     expect(recetaNode).toBeDefined();
 
     // The bug report says: button shows as "- ATRIB" immediately

@@ -15,9 +15,11 @@ import "@xyflow/react/dist/style.css";
 
 import { demoDiagram } from "~/lib/demo-diagram";
 import { erToFlow } from "~/lib/er-to-flow";
+import { applyDagreLayout } from "~/lib/dagre-layout";
 import { parseDbml } from "~/lib/dbml-parser";
 import { parseSqlDdl } from "~/lib/sql-parser";
 import { schemaToEr } from "~/lib/dbml-to-er";
+import { erToDmbl } from "~/lib/er-to-dbml";
 import { withToggleCallback } from "~/lib/with-toggle-callback";
 import { promoteToAssociativeEntity } from "~/lib/er-promote";
 import { useTheme } from "~/lib/useTheme";
@@ -25,9 +27,12 @@ import { EntityNode } from "~/components/er-nodes/EntityNode";
 import { RelationshipNode } from "~/components/er-nodes/RelationshipNode";
 import { AttributeNode } from "~/components/er-nodes/AttributeNode";
 import { ErParticipantEdge } from "~/components/er-edges/ErParticipantEdge";
+import { ErAttributeEdge } from "~/components/er-edges/ErAttributeEdge";
 import { EditorToolbar } from "~/components/EditorToolbar";
 import { EditorSidebar } from "~/components/EditorSidebar";
 import { AIPromptPanel } from "~/components/AIPromptPanel";
+import { SavedDiagramsPanel } from "~/components/SavedDiagramsPanel";
+import type { SavedDiagram } from "~/store/diagramStore";
 import type { ERDiagram } from "~/types/er-model";
 import type { ImportFormat } from "~/components/SchemaImportPanel";
 
@@ -39,6 +44,7 @@ const nodeTypes: NodeTypes = {
 
 const edgeTypes = {
   erParticipant: ErParticipantEdge,
+  erAttribute: ErAttributeEdge,
 };
 
 const DEMO_DBML = `// Demo DBML — paste your own schema below
@@ -105,6 +111,7 @@ export function EREditor() {
   const [importFormat, setImportFormat] = useState<ImportFormat>("dbml");
   const [hoveredRelId, setHoveredRelId] = useState<string | null>(null);
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  const [savedPanelOpen, setSavedPanelOpen] = useState(false);
 
   const [nodes, setNodes] = useState<Node[]>(() =>
     withToggleCallback(erToFlow(demoDiagram).nodes, () => {})
@@ -171,6 +178,19 @@ export function EREditor() {
       });
     }
   }, []);
+
+  const handleAutoLayout = useCallback(() => {
+    setNodes((prevNodes) => {
+      const laid = applyDagreLayout(prevNodes, edges);
+      // Sync new positions into nodePositions so drag overrides are cleared
+      const newPositions = new Map<string, XYPosition>();
+      for (const n of laid) {
+        newPositions.set(n.id, n.position);
+      }
+      setNodePositions(newPositions);
+      return withToggleCallback(laid, toggleRelAttributes, handleHover, handleUnhover);
+    });
+  }, [edges, toggleRelAttributes, handleHover, handleUnhover]);
 
   const highlightedEdges = useMemo<Edge[]>(
     () =>
@@ -251,6 +271,18 @@ export function EREditor() {
     [diagram]
   );
 
+  const handleLoadSaved = useCallback((snapshot: SavedDiagram) => {
+    const positions = new Map(Object.entries(snapshot.nodePositions));
+    setDiagram(snapshot.diagram);
+    setNodePositions(positions);
+    syncDiagram(snapshot.diagram, positions);
+  }, [syncDiagram]);
+
+  const handleCopyDbml = useCallback(() => {
+    const dbml = erToDmbl(diagram);
+    navigator.clipboard.writeText(dbml).catch(() => {});
+  }, [diagram]);
+
   const selectedRel = diagram.relationships.find(
     (r) => r.participants.length > 1
   );
@@ -282,6 +314,9 @@ export function EREditor() {
           entityCount={diagram.entities.length}
           relationshipCount={diagram.relationships.length}
           onAIPromptClick={() => setAiPanelOpen(true)}
+          onAutoLayout={handleAutoLayout}
+          onSavedDiagrams={() => setSavedPanelOpen(true)}
+          onCopyDbml={handleCopyDbml}
         />
 
         {/* React Flow canvas */}
@@ -314,6 +349,14 @@ export function EREditor() {
       </main>
 
       <AIPromptPanel open={aiPanelOpen} onClose={() => setAiPanelOpen(false)} />
+
+      <SavedDiagramsPanel
+        open={savedPanelOpen}
+        currentDiagram={diagram}
+        currentPositions={nodePositions}
+        onLoad={handleLoadSaved}
+        onClose={() => setSavedPanelOpen(false)}
+      />
     </div>
   );
 }
