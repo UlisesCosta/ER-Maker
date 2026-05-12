@@ -124,8 +124,8 @@ export function erToDmbl(diagram: ERDiagram): string {
       (p1.cardinality === "N" || p1.cardinality === "M") &&
       (p2.cardinality === "N" || p2.cardinality === "M");
 
-    if (isNM && hasAttributes) {
-      // Emit a junction table
+    if (isNM) {
+      // Siempre emitir junction table para N:M (con o sin atributos propios)
       junctionTables.push(nmJunctionTable(rel, e1, e2));
       refs.push(`Ref: ${e1.name.toLowerCase()}_${e2.name.toLowerCase()}.${keyAttrName(e1)} > ${e1.name}.${keyAttrName(e1)}`);
       refs.push(`Ref: ${e1.name.toLowerCase()}_${e2.name.toLowerCase()}.${keyAttrName(e2)} > ${e2.name}.${keyAttrName(e2)}`);
